@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
@@ -54,7 +56,12 @@ export default function ProductPage() {
     <div className="p-4 md:p-8">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Products ({products.length})</h1>
-        <ThemeToggle />
+        <div className="flex items-centers space-x-2">
+          <Link href={"/dashboard/products/new"}>
+            <Button>New Product</Button>
+          </Link>
+          <ThemeToggle />
+        </div>
       </div>
       <div className="border rounded-lg">
         <Table>
