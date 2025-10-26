@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { productSchema } from "@/lib/validations";
 
 export async function GET() {
   try {
@@ -17,8 +18,13 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, price } = body;
-
+    const validation = productSchema.safeParse(body);
+    if (!validation.success) {
+      return new NextResponse(JSON.stringify(validation.error.flatten()), {
+        status: 400,
+      });
+    }
+    const { name, price } = validation.data;
     const product = await prisma.product.create({
       data: {
         name: name,
