@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Table,
@@ -12,6 +13,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Product = {
   id: number;
@@ -56,8 +64,8 @@ export default function ProductPage() {
     <div className="p-4 md:p-8">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Products ({products.length})</h1>
-        <div className="flex items-centers space-x-2">
-          <Link href={"/dashboard/products/new"}>
+        <div className="flex items-center space-x-2">
+          <Link href="/dashboard/products/new">
             <Button>New Product</Button>
           </Link>
           <ThemeToggle />
@@ -72,6 +80,8 @@ export default function ProductPage() {
               <TableHead>Featured</TableHead>
               <TableHead className="text-right">Price</TableHead>
               <TableHead>Date</TableHead>
+              {/* Add new column header */}
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -85,6 +95,28 @@ export default function ProductPage() {
                 </TableCell>
                 <TableCell>
                   {new Date(product.createdAt).toLocaleDateString()}
+                </TableCell>
+                {/* Add new actions cell */}
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <DotsHorizontalIcon className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/dashboard/products/${product.id}`}>
+                          Edit
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="text-red-500">
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}
