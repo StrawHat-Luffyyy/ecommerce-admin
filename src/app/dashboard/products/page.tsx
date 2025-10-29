@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { ThemeToggle } from "@/components/theme-toggle";
+//import { ThemeToggle } from "@/components/theme-toggle";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -121,7 +121,6 @@ export default function ProductPage() {
             <Link href="/dashboard/products/new">
               <Button>New Product</Button>
             </Link>
-            <ThemeToggle />
           </div>
         </div>
         <div className="border rounded-lg">
