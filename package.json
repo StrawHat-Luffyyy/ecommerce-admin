@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "prisma:push": "dotenv -e .env.local -- prisma db push",
-    "db:studio": "dotenv -e .env.local -- prisma studio"
+    "db:studio": "dotenv -e .env.local -- prisma studio",
+    "prisma:generate": "dotenv -e .env.local -- prisma generate"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.34.0",
