@@ -1,19 +1,16 @@
-'use client';
+"use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
-// This is placeholder data. We'll replace it with real data soon.
-const data = [
-  { name: "Jan", total: 1200 },
-  { name: "Feb", total: 1800 },
-  { name: "Mar", total: 900 },
-  { name: "Apr", total: 2200 },
-  { name: "May", total: 1500 },
-  { name: "Jun", total: 2500 },
-];
+interface SalesChartProps {
+  data: {
+    name: string;
+    total: number;
+  }[];
+}
 
-export function SalesChart() {
+export function SalesChart({ data }: SalesChartProps) {
   return (
     <Card className="col-span-1 md:col-span-2 lg:col-span-3">
       <CardHeader>

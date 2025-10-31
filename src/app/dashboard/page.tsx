@@ -11,9 +11,40 @@ async function getDashboardData() {
     });
     const totalSales = await prisma.order.count();
 
+    const monthlyRevenue = await prisma.order.groupBy({
+      by: ["createdAt"],
+      _sum: {
+        total: true,
+      },
+    });
+    const graphData: { name: string; total: number }[] = [];
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    for (const monthName of monthNames) {
+      graphData.push({ name: monthName, total: 0 });
+    }
+    for (const orderGroup of monthlyRevenue) {
+      const month = new Date(orderGroup.createdAt).getMonth(); // 0 for Jan, 1 for Feb, etc.
+      graphData[month].total += orderGroup._sum.total || 0;
+    }
+
     return {
       totalRevenue: totalRevenue._sum.total || 0,
       totalSales: totalSales || 0,
+      graphData: graphData,
     };
   } catch (error) {
     console.error("[DASHBOARD_GET]", error);
@@ -54,7 +85,7 @@ export default async function DashboardPage() {
             <div className="text-2xl font-bold">+{data.totalSales}</div>
           </CardContent>
         </Card>
-        <SalesChart />
+        <SalesChart data={data.graphData} />
       </div>
     </div>
   );
