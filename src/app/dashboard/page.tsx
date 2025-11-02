@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
 import { SalesChart } from "./_components/sales-chart";
+import { RecentOrders } from "./_components/recent-orders";
 
 async function getDashboardData() {
   try {
@@ -15,6 +16,20 @@ async function getDashboardData() {
       by: ["createdAt"],
       _sum: {
         total: true,
+      },
+    });
+
+    const recentOrders = await prisma.order.findMany({
+      take: 5,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
     const graphData: { name: string; total: number }[] = [];
@@ -45,6 +60,7 @@ async function getDashboardData() {
       totalRevenue: totalRevenue._sum.total || 0,
       totalSales: totalSales || 0,
       graphData: graphData,
+      recentOrders: recentOrders,
     };
   } catch (error) {
     console.error("[DASHBOARD_GET]", error);
@@ -86,6 +102,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
         <SalesChart data={data.graphData} />
+        <RecentOrders orders={data.recentOrders} />
       </div>
     </div>
   );
