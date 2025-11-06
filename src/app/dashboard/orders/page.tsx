@@ -9,6 +9,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
 
 type Product = {
   id: string;
@@ -51,6 +61,26 @@ export default function OrderPage() {
     fetchOrders();
   }, []);
 
+  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+    try {
+      setOrders((currentOrders) =>
+        currentOrders.map((order) =>
+          order.id === orderId ? { ...order, status: newStatus } : order
+        )
+      );
+      const response = await fetch(`/api/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update order status");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -63,7 +93,10 @@ export default function OrderPage() {
 
   return (
     <div className="p-4 md:p-8">
-      <h1 className="text-2xl font-bold mb-4">Orders ({orders.length})</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold">Orders ({orders.length})</h1>
+        <ThemeToggle />
+      </div>
       <div className="border rounded-lg">
         <Table>
           <TableHeader>
@@ -73,6 +106,7 @@ export default function OrderPage() {
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
               <TableHead className="text-right">Total</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -91,12 +125,55 @@ export default function OrderPage() {
                     </div>
                   ))}
                 </TableCell>
-                <TableCell>{order.status}</TableCell>
+                <TableCell>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium
+                    ${
+                      order.status === "Delivered"
+                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                        : order.status === "Shipped"
+                        ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                    }`}
+                  >
+                    {order.status}
+                  </span>
+                </TableCell>
                 <TableCell>
                   {new Date(order.createdAt).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="text-right">
                   {formatCurrency(order.total)}
+                </TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <DotsHorizontalIcon className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Update Status</DropdownMenuLabel>
+                      <DropdownMenuItem
+                        onClick={() => handleStatusUpdate(order.id, "Pending")}
+                      >
+                        Mark as Pending
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleStatusUpdate(order.id, "Shipped")}
+                      >
+                        Mark as Shipped
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          handleStatusUpdate(order.id, "Delivered")
+                        }
+                      >
+                        Mark as Delivered
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}
