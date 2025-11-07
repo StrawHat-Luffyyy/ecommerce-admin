@@ -6,14 +6,19 @@ export async function PATCH(
   { params }: { params: { orderId: string } }
 ) {
   try {
+    const { orderId } = await params;
     const body = await request.json();
     const { status } = body;
+
     if (!status) {
-      return new NextResponse("Status is required", { status: 400 });
+      return NextResponse.json(
+        { message: "Status is required" },
+        { status: 400 }
+      );
     }
     const order = await prisma.order.update({
       where: {
-        id: params.orderId,
+        id: orderId,
       },
       data: {
         status,
@@ -22,6 +27,9 @@ export async function PATCH(
     return NextResponse.json(order);
   } catch (error) {
     console.error("[ORDER_PATCH]", error);
-    return new NextResponse("Internal error", { status: 500 });
+    return NextResponse.json(
+      { message: "Internal error", error: String(error) },
+      { status: 500 }
+    );
   }
 }
