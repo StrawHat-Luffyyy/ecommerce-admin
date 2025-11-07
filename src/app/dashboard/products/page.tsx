@@ -30,6 +30,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 type Product = {
   id: number;
@@ -38,6 +39,7 @@ type Product = {
   isFeatured: boolean;
   isArchived: boolean;
   createdAt: string;
+  images: string[];
 };
 
 export default function ProductPage() {
@@ -127,6 +129,7 @@ export default function ProductPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Image</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Archived</TableHead>
                 <TableHead>Featured</TableHead>
@@ -139,6 +142,16 @@ export default function ProductPage() {
             <TableBody>
               {products.map((product) => (
                 <TableRow key={product.id}>
+                  <TableCell>
+                    <div className="relative h-10 w-10 aspect-square rounded-md overflow-hidden">
+                      <Image
+                        src={product.images[0] || "/placeholder.png"} // Use first image or a fallback
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{product.isArchived ? "Yes" : "No"}</TableCell>
                   <TableCell>{product.isFeatured ? "Yes" : "No"}</TableCell>

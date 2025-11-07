@@ -16,7 +16,7 @@ export async function PATCH(
         { status: 400 }
       );
     }
-    const { name, price } = validation.data;
+    const { name, price , images} = validation.data;
     const product = await prisma.product.update({
       where: {
         id: productId,
@@ -24,6 +24,7 @@ export async function PATCH(
       data: {
         name,
         price,
+        images
       },
     });
     return NextResponse.json(product);

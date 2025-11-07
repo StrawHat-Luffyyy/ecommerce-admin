@@ -24,12 +24,13 @@ export async function POST(request: NextRequest) {
         status: 400,
       });
     }
-    const { name, price } = validation.data;
+    const { name, price , images} = validation.data;
     const product = await prisma.product.create({
       data: {
         name: name,
         price: price,
         isArchived: false,
+        images
       },
     });
     return NextResponse.json(product, { status: 201 });
