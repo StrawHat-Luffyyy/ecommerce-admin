@@ -98,6 +98,29 @@ export function OrderForm({ products }: OrderFormProps) {
         quantity: item.quantity,
       })),
     };
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create order");
+      }
+      // Success Redirect to the main orders page
+      router.push("/dashboard/orders");
+      router.refresh();
+    } catch (err) {
+      console.error("Error:", err);
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
     console.log("Submitting Order:", orderData);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     console.log("Order submitted (simulation)");
@@ -119,16 +142,18 @@ export function OrderForm({ products }: OrderFormProps) {
 
       {/* CUSTOMER DETAILS */}
       <div className="space-y-4">
-        <h2 className="text-xl text-gray-700 font-semibold">Customer Details</h2>
+        <h2 className="text-xl text-gray-700 font-semibold">
+          Customer Details
+        </h2>
         <Input
-          className="text-gray-700 border-gray-300 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 w-1/5 mt-2 mb-2 rounded-md mr-2"
+          className="w-1/5 mt-2 mb-2 rounded-md mr-2 "
           placeholder="Customer Name"
           value={customerName}
           onChange={(e) => setCustomerName(e.target.value)}
           required
         />
         <Input
-          className="text-gray-700 border-gray-300 focus:ring-gray-500 focus:border-gray-500 placeholder:text-gray-500 w-1/5 mt-2 mb-2 rounded-md "
+          className="  w-1/5 mt-2 mb-2 rounded-md "
           type="email"
           placeholder="Customer Email"
           value={customerEmail}
